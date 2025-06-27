@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nearest Hospital Finder - Snakebite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 100px; }
+    button { padding: 15px 25px; font-size: 18px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Find Nearest Hospital Treating - Snakebite</h2>
+  <button onclick="findNearest()">Find Nearest Hospital</button>
+
+  <script>
+    const hospitals = [
+      { name: "IGMC", lat: 11.9404, lng: 79.7973 },
+      { name: "JIPMER", lat: 11.9503, lng: 79.7997 },
+      { name: "IGGGH & PGI", lat: 11.9316, lng: 79.8323 },
+      { name: "CHC Karikalampakkam", lat: 11.86529, lng: 79.74831 },
+      { name: "CHC Mannadipet", lat: 11.98352, lng: 79.62222 },
+      { name: "Villianur PHC", lat: 11.91128, lng: 79.75657 },
+      { name: "Thavalakuppam PHC", lat: 11.86791, lng: 79.79366 },
+      { name: "Madukarai PHC", lat: 11.87132, lng: 79.60538 },
+      { name: "Ariyankuppam PHC", lat: 11.89555, lng: 79.80527 },
+      { name: "Ariyur PHC", lat: 11.9068, lng: 79.7034 },
+      { name: "Ramanathapuram PHC", lat: 11.98777, lng: 79.70746 },
+      { name: "Karaiyamputhur PHC", lat: 11.82333, lng: 79.65483 },
+      { name: "Koodapakkam PHC", lat: 11.93574, lng: 79.73337 },
+      { name: "Lawspet PHC", lat: 11.95689, lng: 79.81787 },
+      { name: "Mettupalayam PHC", lat: 11.94203, lng: 79.78779 },
+      { name: "Mudaliarpet PHC", lat: 11.9078, lng: 79.80391 },
+      { name: "Muthialpet PHC", lat: 11.95487, lng: 79.83151 },
+      { name: "Nettapakkam PHC", lat: 11.8667, lng: 79.63292 },
+      { name: "Thirubuvanai PHC", lat: 11.92556, lng: 79.64502 },
+      { name: "Thirukkanur PHC", lat: 11.99264, lng: 79.6373 },
+      { name: "Bahour PHC", lat: 11.80657, lng: 79.74211 },
+      { name: "Reddiarpalayam PHC", lat: 11.93263, lng: 79.795 },
+      { name: "Kalapet PHC", lat: 12.03211, lng: 79.86403 },
+      { name: "Kirumampakkam PHC", lat: 11.82279, lng: 79.78496 },
+      { name: "Katterikuppam PHC", lat: 12.00129, lng: 79.70436 }
+    ];
+
+    function haversine(lat1, lon1, lat2, lon2) {
+      const toRad = x => x * Math.PI / 180;
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function findNearest() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+
+          let nearest = null;
+          let minDist = Infinity;
+
+          hospitals.forEach(h => {
+            const dist = haversine(userLat, userLng, h.lat, h.lng);
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = h;
+            }
+          });
+
+          const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${nearest.lat},${nearest.lng}&travelmode=driving`;
+          window.location.href = mapsUrl;
+
+        }, () => {
+          alert("Location access denied.");
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+</body>
+</html>
